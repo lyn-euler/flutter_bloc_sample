@@ -12,8 +12,12 @@ sudo: false
 #           - libstdc++6
 #           - fonts-droid
 before_script:
-- git clone https://github.com/flutter/flutter.git -b beta --depth 1
+- cd ..
+- git clone https://github.com/flutter/flutter.git --depth 1
+- export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+- flutter doctor
+
 script:
-- "./flutter/bin/flutter packages get"
-- "./flutter/bin/flutter test --coverage"
+- "flutter packages get"
+- "flutter test --coverage"
 
