@@ -22,6 +22,6 @@ script:
 - cd $TRAVIS_BUILD_DIR
 - flutter --version
 # - flutter upgrade
-- flutter packages
+# - flutter packages get
 - flutter test --coverage
 
