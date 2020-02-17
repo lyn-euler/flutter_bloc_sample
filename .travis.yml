@@ -3,7 +3,7 @@ language: generic
 sudo: true
 addons:
     apt:
-        source:
+        sources:
         - ubuntu-toolchain-r-test
         packages:
         - libstdc++6
