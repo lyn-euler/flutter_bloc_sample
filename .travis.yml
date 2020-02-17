@@ -1,6 +1,6 @@
-language: dart
-dart:
-  - stable
+language: generic
+# dart:
+#   - stable
 os:
   - osx
 sudo: false
@@ -15,7 +15,7 @@ before_script:
 - cd ..
 - git clone https://github.com/flutter/flutter.git --depth 1
 - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
-- flutter upgrade
+# - flutter upgrade
 - flutter doctor
 
 script:
