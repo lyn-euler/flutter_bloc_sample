@@ -1,6 +1,6 @@
 os: linux
 language: generic
-sudo: false
+sudo: true
 addons:
     apt:
         source:
