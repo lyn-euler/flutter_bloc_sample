@@ -13,6 +13,7 @@ sudo: false
 #           - fonts-droid
 before_script:
 - cd ..
+- gem install coveralls-lcov
 - git clone https://github.com/flutter/flutter.git -b stable
 - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
 # - flutter upgrade
@@ -24,4 +25,5 @@ script:
 # - flutter upgrade
 # - flutter packages get
 - flutter test --coverage
+- coveralls-lcov coverage/lcov.info
 
