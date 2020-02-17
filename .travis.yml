@@ -2,15 +2,15 @@ language: dart
 dart:
   - stable
 os:
-  - linux
+  - osx
 sudo: false
-addons:
-    apt:
-        sources:
-          - ubuntu-toolchain-r-test # you need this source to get the right version of libstdc++6
-        packages:
-          - libstdc++6
-          - fonts-droid
+# addons:
+#     apt:
+#         sources:
+#           - ubuntu-toolchain-r-test # you need this source to get the right version of libstdc++6
+#         packages:
+#           - libstdc++6
+#           - fonts-droid
 before_script:
 - git clone https://github.com/flutter/flutter.git -b beta --depth 1
 script:
