@@ -2,19 +2,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_sample/module/collection/widget/articles_page.dart';
+import 'package:flutter_bloc_sample/module/login/bloc/login_bloc.dart';
+import 'package:flutter_bloc_sample/module/login/widget/login_page.dart';
 
 void main() {
   if (kDebugMode) {
     BlocSupervisor.delegate = SimpleBlocDelegate();
   }
-  runApp(MyApp());
+
+  runApp(BlocProvider(
+    create: (context) => LoginBloc(),
+    child: MyApp(), //ArticlesPage(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -30,11 +35,20 @@ class MyApp extends StatelessWidget {
 //        brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
-      home: ArticlesPage(),
+      home: BlocBuilder<LoginBloc, LoginState>(
+        builder: (context, state) {
+          bool hasToken = false;
+          if (state is LoginSuccess) {
+            hasToken = state.token != null;
+          }else if(state is LoginInit) {
+            hasToken = state.token != null;
+          }
+          return hasToken ? ArticlesPage() : LoginPage();
+        },
+      ),
     );
   }
 }
-
 
 class SimpleBlocDelegate extends BlocDelegate {
   @override
@@ -55,4 +69,3 @@ class SimpleBlocDelegate extends BlocDelegate {
     debugPrint('$error, $stacktrace');
   }
 }
-

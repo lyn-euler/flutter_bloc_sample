@@ -1,2 +1,5 @@
 build/
 ios/Flutter/
+.idea
+.dart_tool
+.packages
