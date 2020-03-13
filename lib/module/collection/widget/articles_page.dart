@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_sample/module/collection/bloc/article_star_bloc.dart';
 import 'package:flutter_bloc_sample/module/collection/bloc/articles_bloc.dart';
+import 'package:flutter_bloc_sample/module/login/bloc/login_bloc.dart';
 import './article_widget.dart';
 import '../bloc/articles_bloc.dart';
 
@@ -11,6 +12,14 @@ class ArticlesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("文章列表"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              BlocProvider.of<LoginBloc>(context).add(LogoutEvent());
+            },
+          ),
+        ],
       ),
       body: BlocProvider<ArticlesBloc>(
         create: (BuildContext context) => ArticlesBloc(),

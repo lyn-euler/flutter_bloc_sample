@@ -34,9 +34,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   @override
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
-    // TODO: implement mapEventToState
-    print(event.toString());
-    yield LoginSuccess("token");
+    if (event is LogoutEvent) {
+      yield LoginInit(null);
+    }else if(event is LoginEvent) {
+      yield LoginSuccess("token");
+    }
   }
 }
 
@@ -46,6 +48,10 @@ class LoginEvent {
 //  LoginEvent(this.mobile, this.smsCode);
 //  @override
 //  String toString() => "{mobile: $mobile, smsCode: $smsCode}";
+}
+
+class LogoutEvent extends LoginEvent {
+
 }
 
 
