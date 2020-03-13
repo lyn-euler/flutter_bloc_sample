@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_sample/module/login/bloc/login_bloc.dart';
 import 'package:flutter_bloc_sample/module/login/bloc/verify_bloc.dart';
+import 'package:rxdart/rxdart.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -23,13 +24,23 @@ class _LoginWidget extends StatelessWidget {
     // TODO: implement build
     return Form(
       autovalidate: true,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          _MobileTextField(),
-          _SmsCodeTextField(),
-          _LoginButton()
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<MobileVerifyBloc>(
+            create: (context) => MobileVerifyBloc(),
+          ),
+          BlocProvider<SmsCodeVerifyBloc>(
+            create: (context) => SmsCodeVerifyBloc(),
+          ),
         ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _MobileTextField(),
+            _SmsCodeTextField(),
+            _LoginButton()
+          ],
+        ),
       ),
     );
   }
@@ -39,8 +50,7 @@ class _MobileTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String _validateText;
-    return BlocListener<VerifyBloc, VerifyState>(
-      bloc: BlocProvider.of<LoginBloc>(context).mobileVerifyBloc,
+    return BlocListener<MobileVerifyBloc, VerifyState>(
       listener: (context, state) {
         if (state is VerifyFailed) {
           _validateText = state.validateText;
@@ -51,15 +61,15 @@ class _MobileTextField extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(20),
         child: TextFormField(
+          keyboardType: TextInputType.phone,
           validator: (text) {
             return _validateText;
           },
           onChanged: (text) {
-            BlocProvider.of<LoginBloc>(context)
-                .mobileVerifyBloc
-                .add(VerifyEvent(text));
+            BlocProvider.of<MobileVerifyBloc>(context).add(VerifyEvent(text));
           },
           maxLength: 11,
+          enableInteractiveSelection: false,
           decoration: InputDecoration(
             icon: Icon(Icons.phone),
             labelText: '手机号',
@@ -75,8 +85,8 @@ class _SmsCodeTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String _validateText;
-    return BlocListener<VerifyBloc, VerifyState>(
-      bloc: BlocProvider.of<LoginBloc>(context).smsCodeVerifyBloc,
+
+    return BlocListener<SmsCodeVerifyBloc, VerifyState>(
       listener: (context, state) {
         if (state is VerifyFailed) {
           _validateText = state.validateText;
@@ -88,10 +98,10 @@ class _SmsCodeTextField extends StatelessWidget {
         padding: EdgeInsets.only(left: 20, right: 20, bottom: 30),
         child: TextFormField(
           validator: (text) => _validateText,
+          keyboardType: TextInputType.number,
+          enableInteractiveSelection: false,
           onChanged: (text) {
-            BlocProvider.of<LoginBloc>(context)
-                .smsCodeVerifyBloc
-                .add(VerifyEvent(text));
+            BlocProvider.of<SmsCodeVerifyBloc>(context).add(VerifyEvent(text));
           },
           maxLength: 6,
           decoration: InputDecoration(
@@ -109,7 +119,10 @@ class _LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: BlocProvider.of<LoginBloc>(context).mobileAndCodeObservable(),
+      stream: Rx.combineLatest2(BlocProvider.of<MobileVerifyBloc>(context),
+          BlocProvider.of<SmsCodeVerifyBloc>(context), (mState, sState) {
+        return (mState is VerifySuccess && sState is VerifySuccess);
+      }),
       builder: (context, snapshot) {
         return Container(
           width: double.maxFinite,
@@ -120,7 +133,9 @@ class _LoginButton extends StatelessWidget {
               color: (snapshot.data ?? false) ? Colors.blue : Colors.grey,
               onPressed: () {
                 if (snapshot.data ?? false) {
-                  BlocProvider.of<LoginBloc>(context).add(LoginEvent());
+                  final mobile = BlocProvider.of<MobileVerifyBloc>(context).mobile;
+                  final smsCode = BlocProvider.of<SmsCodeVerifyBloc>(context).smsCode;
+                  BlocProvider.of<LoginBloc>(context).add(LoginEvent(mobile, smsCode));
                 }
               },
               child: Text(
